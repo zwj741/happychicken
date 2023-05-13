@@ -1,4 +1,5 @@
-import { Sprite } from 'pixi.js'
+import { Sound } from '@pixi/sound';
+import { Sprite, Texture } from 'pixi.js'
 
 export class Chicken extends Sprite {
 
@@ -10,7 +11,8 @@ export class Chicken extends Sprite {
             offset: {
                 x: -140,
                 y: -10
-            }
+            },
+            resource: Texture.EMPTY
         },
         {
             name: "left_foot",
@@ -18,7 +20,8 @@ export class Chicken extends Sprite {
             offset: {
                 x: -30,
                 y: 130
-            }
+            },
+            resource: Texture.EMPTY
         },
         {
             name: "right_foot",
@@ -26,7 +29,8 @@ export class Chicken extends Sprite {
             offset: {
                 x: 30,
                 y: 130
-            }
+            },
+            resource: Texture.EMPTY
         },
         {
             name: "body",
@@ -34,7 +38,8 @@ export class Chicken extends Sprite {
             offset: {
                 x: 0,
                 y: 0
-            }
+            },
+            resource: Texture.EMPTY
         },
         {
             name: "eye",
@@ -42,25 +47,43 @@ export class Chicken extends Sprite {
             offset: {
                 x: -20,
                 y: -30
-            }
+            },
+            resource: Texture.EMPTY
         },
 
     ]
     box: Array<Sprite> = [];
     leftUp = true;
     rightUp = false;
+    otherText: Array<{ name: string, path: string, resource: Texture }> = [
+        {
+            name: "eye",
+            path: "eye_close",
+            resource: Texture.EMPTY,
+        },
 
+        {
+            name: "mouth",
+            path: "mouth_open",
+            resource: Texture.EMPTY,
+        }
+    ]
     constructor() {
         super();
         this.arrayofComponent.forEach(item => {
-            let part = Sprite.from(`./assets/images/chicken/${item.path}.png`);
+            let texture = Texture.from(`./assets/images/chicken/${item.path}.png`);
+            let part = Sprite.from(texture);
             part.anchor.set(0.5);
             part.x = item.offset?.x || 0;
             part.y = item.offset?.y || 0;
             part.name = item.name;
+            item.resource = texture;
             this.addChild(part);
         });
-
+        this.otherText.forEach(item => {
+            let text = Texture.from(`./assets/images/chicken/${item.path}.png`);
+            item.resource = text;
+        })
         this.play();
 
 
@@ -70,8 +93,8 @@ export class Chicken extends Sprite {
 
 
         setInterval(() => {
-            let leftLeg = this.getChildByName("left_foot") ||  {y:0};
-            let rightLeg = this.getChildByName("right_foot") ||  {y:0};
+            let leftLeg = this.getChildByName("left_foot") || { y: 0 };
+            let rightLeg = this.getChildByName("right_foot") || { y: 0 };
 
             leftLeg.y = this.leftUp ? 100 : 130;
             this.leftUp = !this.leftUp;
@@ -83,6 +106,38 @@ export class Chicken extends Sprite {
 
         }, 200);
     }
+    timeout: NodeJS.Timeout | null = null;
+    happy() {
 
+
+
+        let r_eye = this.otherText.find(p => p.name == "eye");
+        let r_mouth = this.otherText.find(p => p.name == "mouth");
+        let eye_el = (this.getChildByName("eye") as Sprite);
+        let mouth_el = (this.getChildByName("mouth") as Sprite)
+        if (r_eye != null)
+            eye_el.texture = r_eye.resource;
+        if (r_mouth != null)
+            mouth_el.texture = r_mouth.resource;
+
+
+
+
+        if (!!this.timeout)
+            clearTimeout(this.timeout);
+        this.timeout = setTimeout(() => {
+            let n_eye = this.arrayofComponent.find(p => p.name == "eye");
+            let n_mouth = this.arrayofComponent.find(p => p.name == "mouth");
+            if (n_eye != null)
+                eye_el.texture = n_eye.resource;
+            if (n_mouth != null)
+                mouth_el.texture = n_mouth.resource;
+
+        }, 200)
+    }
+    tween()
+    {
+        Sound.from(`./assets/music/wakeup.m4a`).play();
+    }
 
 }

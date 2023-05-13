@@ -1,7 +1,8 @@
 import { Application, Container, Sprite, Texture } from 'pixi.js'
 import { Chicken } from './chicken';
 import { Egg } from './egg';
-import * as TWEEN from '@tweenjs/tween.js'
+import {Tween,update} from '@tweenjs/tween.js'
+import { Sound } from '@pixi/sound';
 
 const app = new Application({
 	view: document.getElementById("pixi-canvas") as HTMLCanvasElement,
@@ -38,22 +39,58 @@ over.addChild(chick);
 
 
 bg.addEventListener("pointerdown", function (e) {
-	
+	Sound.from(`./assets/music/fangpi.mp3`).play();
+
 	let egg = new Egg();
 	
 	egg.x =  chick.x = e.globalX;
 	egg.y =  chick.y = e.globalY;
-	egg.y +=30;
 	egg.x +=30;
 
-	egg.width = 0.3;
-	egg.height = 0.3;
+	egg.width = 0.0;
+	egg.height = 0.0;
 	egg.anchor.x = 0.5;
 	egg.anchor.y = 0.5;
 
-	under.addChild(egg);
-	//eggCount+=1;
+	egg.onBirth(()=>{
 
+		let chick_temp = new Chicken();
+		chick_temp.x = egg.x
+		chick_temp.y = egg.y
+		chick_temp.height = chick_temp.width = 0;
+		under.addChild(chick_temp);
+		new Tween(egg).to({
+			alpha :0
+		},200) .onComplete(()=>{
+			egg.destroy();
+		}).start();
+
+		new Tween(chick_temp).to({
+			width:0.15,
+			height:0.15
+		},200).onComplete(()=>{
+
+			new Tween(chick_temp).to({
+				x:-20,
+			
+			},chick_temp.x / 0.2).onComplete(()=>{
+				chick_temp.destroy();
+			}).start();
+
+			chick_temp.happy();
+			chick_temp.tween();
+			
+		}).start();
+	})
+	under.addChild(egg);
+
+	new Tween(egg).to({
+		width:0.3,
+		height:0.3,
+		y:egg.y+50
+	},200).start();
+
+	chick.happy();
 
 });
 
@@ -61,13 +98,16 @@ bg.addEventListener("pointerdown", function (e) {
 window.addEventListener("resize",()=>{
 	app.renderer.resize(window.innerWidth,window.innerHeight)
 })
-
+let bgm = Sound.from(`./assets/music/bg.mp3`);
+bgm.loop = true;
+bgm.volume =0.5;
+bgm.play();
 
 animate()
 
 function animate() {
 	requestAnimationFrame(animate)
 	// [...]
-	TWEEN.update()
+	update();
 	// [...]
 }
