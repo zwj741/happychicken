@@ -1,4 +1,3 @@
-import { Sound } from '@pixi/sound';
 import { Sprite, Texture } from 'pixi.js'
 
 export class Chicken extends Sprite {
@@ -135,9 +134,6 @@ export class Chicken extends Sprite {
 
         }, 200)
     }
-    tween()
-    {
-        Sound.from(`./assets/music/wakeup.m4a`).play();
-    }
+ 
 
 }

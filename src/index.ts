@@ -13,12 +13,13 @@ const app = new Application({
 	height: window.innerHeight
 });
 
-
-//let eggCount = 0;
 let bg = new Sprite(Texture.WHITE);
 let under = new Container();
 let over = new Container();
 let chick = new Chicken();
+let pi = Sound.from(`./assets/music/fangpi.mp3`);
+let tween = Sound.from(`./assets/music/wakeup.mp3`);
+
 
 chick.x = app.screen.width / 2;
 chick.y = app.screen.height / 2;
@@ -39,7 +40,7 @@ over.addChild(chick);
 
 
 bg.addEventListener("pointerdown", function (e) {
-	Sound.from(`./assets/music/fangpi.mp3`).play();
+	pi.play();
 
 	let egg = new Egg();
 	
@@ -78,7 +79,7 @@ bg.addEventListener("pointerdown", function (e) {
 			}).start();
 
 			chick_temp.happy();
-			chick_temp.tween();
+			tween.play();
 			
 		}).start();
 	})
