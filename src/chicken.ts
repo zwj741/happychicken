@@ -89,11 +89,12 @@ export class Chicken extends Sprite {
     }
 
     play() {
+        let leftLeg = this.getChildByName("left_foot") || { y: 0 };
+        let rightLeg = this.getChildByName("right_foot") || { y: 0 };
 
 
         setInterval(() => {
-            let leftLeg = this.getChildByName("left_foot") || { y: 0 };
-            let rightLeg = this.getChildByName("right_foot") || { y: 0 };
+           
 
             leftLeg.y = this.leftUp ? 100 : 130;
             this.leftUp = !this.leftUp;
